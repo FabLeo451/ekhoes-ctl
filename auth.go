@@ -15,6 +15,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/olekukonko/tablewriter"
 	"golang.org/x/term"
 )
 
@@ -157,6 +158,57 @@ func login(args []string) error {
 
 		return errors.New(string(bodyBytes))
 	}
+
+	return nil
+}
+
+func getSessions(args []string) error {
+	endpoint := fmt.Sprintf("%s/sessions", conf.URL)
+
+	req, err := http.NewRequest("GET", endpoint, nil)
+	if err != nil {
+		return err
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", _token)
+
+	// Create client and call
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	//fmt.Println("Status:", resp.Status)
+
+	if resp.StatusCode != 200 {
+		bodyBytes, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return errors.New("Unable to read body")
+		}
+
+		return errors.New(string(bodyBytes))
+	}
+
+	bodyBytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return errors.New("Unable to read body")
+	}
+
+	fmt.Println(string(bodyBytes))
+
+	data := [][]string{
+		{"Package", "Version", "Status"},
+		{"tablewriter", "v0.0.5", "legacy"},
+		{"tablewriter", "v1.1.2", "latest"},
+	}
+
+	table := tablewriter.NewWriter(os.Stdout)
+	table.Header(data[0])
+	table.Bulk(data[1:])
+	table.Render()
 
 	return nil
 }

@@ -23,6 +23,7 @@ type Command struct {
 func main() {
 	mapCommands := make(map[string]Command)
 	mapCommands["login"] = Command{login, "", "Login"}
+	mapCommands["sessions"] = Command{getSessions, "", "Retrieve sessions"}
 
 	flag.BoolVar(&flagVersion, "v", false, "Show version")
 
