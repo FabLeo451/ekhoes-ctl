@@ -1,29 +1,18 @@
 package main
 
 import (
-	"errors"
 	"flag"
 	"fmt"
 	"log"
 	"os"
 	"path"
-	"path/filepath"
-
-	"gopkg.in/yaml.v3"
 )
 
 var version = "1.0.0"
 
-var port int
-var host string
 var flagVersion = false
 
-type Config struct {
-	URL     string `yaml:"url"`
-	Verbose bool   `yaml:"verbose"`
-}
-
-type Callback func([]string) int
+type Callback func([]string) error
 
 type Command struct {
 	f    Callback
@@ -31,71 +20,10 @@ type Command struct {
 	help string
 }
 
-func confDirExists() (bool, error) {
-	home, err := os.UserHomeDir()
-	if err != nil {
-		return false, err
-	}
-
-	path := filepath.Join(home, ".ekhoes")
-
-	info, err := os.Stat(path)
-	if err != nil {
-		if os.IsNotExist(err) {
-			return false, nil
-		}
-		return false, err
-	}
-
-	return info.IsDir(), nil
-}
-
-func createEkhoesConfig() error {
-	home, err := os.UserHomeDir()
-	if err != nil {
-		return err
-	}
-
-	dirPath := filepath.Join(home, ".ekhoes")
-
-	// 0700 → solo l'utente può accedere
-	if err := os.MkdirAll(dirPath, 0700); err != nil {
-		return err
-	}
-
-	configPath := filepath.Join(home, ".ekhoes/conf.yml")
-
-	if _, err := os.Stat(configPath); err == nil {
-		return errors.New("il file ~/.ekhoes esiste già")
-	} else if !os.IsNotExist(err) {
-		return err
-	}
-
-	cfg := Config{
-		URL:     "https://websocket.ekhoes.com",
-		Verbose: false,
-	}
-
-	data, err := yaml.Marshal(&cfg)
-	if err != nil {
-		return err
-	}
-
-	// 0600 → solo l'utente può leggere/scrivere
-	return os.WriteFile(configPath, data, 0600)
-}
-
 func main() {
 	mapCommands := make(map[string]Command)
-	/*
-	   mapCommands["programs"] = Command{ ListPrograms, "", "List programs" }
-	   mapCommands["compile"] = Command{ CopmileProgram, "ID", "Compile program with the given id" }
-	   mapCommands["plugins"] = Command{ ListPlugins, "", "List installed plugins" }
-	   mapCommands["install"] = Command{ InstallPlugin, "JARFILE", "Install a plugin from a jar file" }
-	*/
+	mapCommands["login"] = Command{login, "", "Login"}
 
-	flag.StringVar(&host, "h", "localhost", "Set server host")
-	flag.IntVar(&port, "p", 8443, "Set server port")
 	flag.BoolVar(&flagVersion, "v", false, "Show version")
 
 	flag.Usage = func() {
@@ -144,6 +72,11 @@ func main() {
 		os.Exit(0)
 	}
 
+	err = loadEkhoesConfig()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	args := flag.Args()
 
 	if len(args) == 0 {
@@ -153,7 +86,23 @@ func main() {
 	var exitValue int = 0
 
 	if c, found := mapCommands[args[0]]; found {
-		exitValue = c.f(args)
+
+		// Checking login
+		exists, err = tokenExists()
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		if !exists && args[0] != "login" {
+			log.Fatal("Please, login first")
+		}
+
+		err = c.f(args)
+
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "error: %v\n", err)
+			exitValue = 1
+		}
 	} else {
 		fmt.Fprintln(os.Stderr, "Unknown command: ", args[0])
 		exitValue = 1
