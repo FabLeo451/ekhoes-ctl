@@ -29,10 +29,12 @@ type LoginResponse struct {
 	Token string `json:"token"`
 }
 
-func tokenExists() (bool, error) {
+var _token string
+
+func getToken() (string, error) {
 	home, err := os.UserHomeDir()
 	if err != nil {
-		return false, err
+		return "", err
 	}
 
 	tokenPath := filepath.Join(home, ".ekhoes", "token")
@@ -40,12 +42,23 @@ func tokenExists() (bool, error) {
 	info, err := os.Stat(tokenPath)
 	if err != nil {
 		if os.IsNotExist(err) {
-			return false, nil
+			return "", nil
 		}
-		return false, err
+		return "", err
 	}
 
-	return info.Mode().IsRegular(), nil
+	if !info.Mode().IsRegular() {
+		return "", errors.New("not a regular file")
+	}
+
+	data, err := os.ReadFile(tokenPath)
+	if err != nil {
+		return "", err
+	}
+
+	_token = string(data)
+
+	return string(_token), nil
 }
 
 func saveToken(token string) error {

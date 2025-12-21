@@ -88,12 +88,12 @@ func main() {
 	if c, found := mapCommands[args[0]]; found {
 
 		// Checking login
-		exists, err = tokenExists()
+		token, err := getToken()
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		if !exists && args[0] != "login" {
+		if token == "" && args[0] != "login" {
 			log.Fatal("Please, login first")
 		}
 
