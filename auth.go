@@ -206,7 +206,7 @@ func getSessions(args []string) error {
 		return errors.New("Unable to read body")
 	}
 
-	fmt.Println(string(bodyBytes))
+	//fmt.Println(string(bodyBytes))
 
 	var items []Item
 	if err := json.Unmarshal(bodyBytes, &items); err != nil {
@@ -247,7 +247,7 @@ func getSessions(args []string) error {
 		})
 	}
 
-	fmt.Println()
+	//fmt.Println()
 	t.Render()
 
 	return nil
