@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"time"
 
 	"net/http"
 	"net/url"
@@ -235,6 +236,15 @@ func getSessions(args []string) error {
 	})
 
 	for _, item := range items {
+
+		// parse RFC3339
+		tm, err := time.Parse(time.RFC3339, item.Updated)
+		if err != nil {
+			panic(err)
+		}
+
+		updatedLocal := tm.In(time.Local)
+
 		t.AppendRow(table.Row{
 			item.Id,
 			item.Status,
@@ -243,7 +253,7 @@ func getSessions(args []string) error {
 			item.Agent,
 			item.Platform,
 			item.DeviceType,
-			item.Updated,
+			updatedLocal.Format("2006-01-02 15:04:05"),
 		})
 	}
 
