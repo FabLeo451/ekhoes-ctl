@@ -15,7 +15,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/olekukonko/tablewriter"
+	"github.com/jedib0t/go-pretty/v6/table"
 	"golang.org/x/term"
 )
 
@@ -24,10 +24,19 @@ type Credentials struct {
 	Password string `json:"password"`
 }
 
-type LoginResponse struct {
-	Id    string `json:"id"`
+type User struct {
 	Name  string `json:"name"`
-	Token string `json:"token"`
+	Email string `json:"email"`
+}
+
+type Item struct {
+	Id         string `json:"id"`
+	Status     string `json:"status"`
+	User       User   `json:"user"`
+	Agent      string `json:"agent"`
+	Platform   string `json:"platform"`
+	DeviceType string `json:"deviceType"`
+	Updated    string `json:"updated"`
 }
 
 var _token string
@@ -199,16 +208,47 @@ func getSessions(args []string) error {
 
 	fmt.Println(string(bodyBytes))
 
-	data := [][]string{
-		{"Package", "Version", "Status"},
-		{"tablewriter", "v0.0.5", "legacy"},
-		{"tablewriter", "v1.1.2", "latest"},
+	var items []Item
+	if err := json.Unmarshal(bodyBytes, &items); err != nil {
+		panic(err)
 	}
 
-	table := tablewriter.NewWriter(os.Stdout)
-	table.Header(data[0])
-	table.Bulk(data[1:])
-	table.Render()
+	t := table.NewWriter()
+	t.SetOutputMirror(os.Stdout)
+
+	// stile compatto tipo kubectl / ps
+	t.SetStyle(table.StyleLight)
+	t.Style().Options.DrawBorder = false
+	t.Style().Options.SeparateColumns = false
+	t.Style().Options.SeparateHeader = false
+	t.Style().Options.SeparateRows = false
+
+	t.AppendHeader(table.Row{
+		"Id",
+		"Status",
+		"Name",
+		"Email",
+		"Agent",
+		"Platform",
+		"Device Type",
+		"Updated",
+	})
+
+	for _, item := range items {
+		t.AppendRow(table.Row{
+			item.Id,
+			item.Status,
+			item.User.Name,
+			item.User.Email,
+			item.Agent,
+			item.Platform,
+			item.DeviceType,
+			item.Updated,
+		})
+	}
+
+	fmt.Println()
+	t.Render()
 
 	return nil
 }
