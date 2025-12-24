@@ -24,6 +24,7 @@ func main() {
 	mapCommands := make(map[string]Command)
 	mapCommands["login"] = Command{login, "", "Login"}
 	mapCommands["sessions"] = Command{getSessions, "", "Retrieve sessions"}
+	mapCommands["connections"] = Command{getWebsocketConnections, "", "Retrieve websocket connections"}
 
 	flag.BoolVar(&flagVersion, "v", false, "Show version")
 
