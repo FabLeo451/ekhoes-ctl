@@ -23,7 +23,9 @@ type Command struct {
 func main() {
 	mapCommands := make(map[string]Command)
 	mapCommands["login"] = Command{login, "", "Login"}
+	mapCommands["logout"] = Command{logout, "", "Delete authentication token"}
 	mapCommands["sessions"] = Command{getSessions, "", "Retrieve sessions"}
+	mapCommands["kill"] = Command{killSession, "session_id", "Kill a session"}
 	mapCommands["connections"] = Command{getWebsocketConnections, "", "Retrieve websocket connections"}
 
 	flag.BoolVar(&flagVersion, "v", false, "Show version")

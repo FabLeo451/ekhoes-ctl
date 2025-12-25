@@ -172,6 +172,24 @@ func login(args []string) error {
 	return nil
 }
 
+func logout(args []string) error {
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return err
+	}
+	
+	filePath := filepath.Join(home, ".ekhoes/token")
+	
+	err = os.Remove(filePath)
+	if err != nil {
+		return err
+	}
+	
+	fmt.Println("Authentication token deleted")
+	
+	return nil
+}
+
 func getSessions(args []string) error {
 	endpoint := fmt.Sprintf("%s/sessions", conf.URL)
 
@@ -259,6 +277,44 @@ func getSessions(args []string) error {
 
 	//fmt.Println()
 	t.Render()
+
+	return nil
+}
+
+func killSession(args []string) error {
+
+	if len(args) < 2 {
+		return errors.New("Missing session id")
+	}
+
+	endpoint := fmt.Sprintf("%s/session/%s", conf.URL, args[1])
+
+	req, err := http.NewRequest("DELETE", endpoint, nil)
+	if err != nil {
+		return err
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", _token)
+
+	// Create client and call
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	//fmt.Println("Status:", resp.Status)
+
+	if resp.StatusCode != 200 {
+		bodyBytes, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return errors.New("Unable to read body")
+		}
+
+		return errors.New(string(bodyBytes))
+	}
 
 	return nil
 }
