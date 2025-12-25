@@ -26,6 +26,7 @@ func main() {
 	mapCommands["logout"] = Command{logout, "", "Delete authentication token"}
 	mapCommands["sessions"] = Command{getSessions, "", "Retrieve sessions"}
 	mapCommands["kill"] = Command{killSession, "session_id", "Kill a session"}
+	mapCommands["killall"] = Command{killAllSessions, "", "Kill all sessions"}
 	mapCommands["connections"] = Command{getWebsocketConnections, "", "Retrieve websocket connections"}
 
 	flag.BoolVar(&flagVersion, "v", false, "Show version")

@@ -318,3 +318,38 @@ func killSession(args []string) error {
 
 	return nil
 }
+
+func killAllSessions(args []string) error {
+
+	endpoint := fmt.Sprintf("%s/sessions", conf.URL)
+
+	req, err := http.NewRequest("DELETE", endpoint, nil)
+	if err != nil {
+		return err
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", _token)
+
+	// Create client and call
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	//fmt.Println("Status:", resp.Status)
+
+	if resp.StatusCode != 200 {
+		bodyBytes, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return errors.New("Unable to read body")
+		}
+
+		return errors.New(string(bodyBytes))
+	}
+
+	return nil
+}
+
