@@ -158,7 +158,8 @@ func login(args []string) error {
 			return err
 		}
 
-		fmt.Printf("\nHello, %s. You have successfully logged in!\n\n", result["name"])
+		fmt.Printf("\nHello, %s. You have successfully logged in!\n", result["name"])
+		fmt.Printf("Hostname: %s\n\n", result["hostname"])
 
 	} else {
 		bodyBytes, err := io.ReadAll(resp.Body)
