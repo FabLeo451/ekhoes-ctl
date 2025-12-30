@@ -14,9 +14,11 @@ import (
 )
 
 type ConnectionItem struct {
-	SessionId string    `json:"sessionId"`
-	Email     string    `json:"email"`
-	Created   time.Time `json:"created"`
+	SessionId 	 string    `json:"sessionId"`
+	Email     	 string    `json:"email"`
+	Created   	 time.Time `json:"created"`
+	LastActivity     string    `json:"lastActivity"`
+	LastActivityTime time.Time `json:"lastActivityTime"`
 }
 
 func getWebsocketConnections(args []string) error {
@@ -73,16 +75,28 @@ func getWebsocketConnections(args []string) error {
 
 	t.AppendHeader(table.Row{
 		"Session Id",
-		"User Email",
+		"User",
 		"Created",
+		"Last activity",
+		"Last activity time",
 	})
 
 	for _, item := range items {
 
+		tUTC := item.Created.UTC()
+		tLocal := tUTC.In(time.Local)
+		created := tLocal.Format("2006-01-02 15:04:05")
+
+		tUTC = item.LastActivityTime.UTC()
+		tLocal = tUTC.In(time.Local)
+		lastActivityTime := tLocal.Format("2006-01-02 15:04:05")		
+
 		t.AppendRow(table.Row{
 			item.SessionId,
 			item.Email,
-			item.Created.Format("2006-01-02 15:04:05"),
+			created,
+			item.LastActivity,
+			lastActivityTime,
 		})
 	}
 
