@@ -1,4 +1,4 @@
-package main
+package config
 
 import (
 	"errors"
@@ -12,9 +12,9 @@ type Config struct {
 	URL string `yaml:"url"`
 }
 
-var conf Config
+var Conf Config
 
-func confDirExists() (bool, error) {
+func ConfDirExists() (bool, error) {
 	home, err := os.UserHomeDir()
 	if err != nil {
 		return false, err
@@ -33,7 +33,7 @@ func confDirExists() (bool, error) {
 	return info.IsDir(), nil
 }
 
-func createEkhoesConfig() error {
+func CreateEkhoesConfig() error {
 	home, err := os.UserHomeDir()
 	if err != nil {
 		return err
@@ -67,7 +67,7 @@ func createEkhoesConfig() error {
 	return os.WriteFile(configPath, data, 0600)
 }
 
-func loadEkhoesConfig() error {
+func LoadEkhoesConfig() error {
 	home, err := os.UserHomeDir()
 	if err != nil {
 		return err
@@ -80,7 +80,7 @@ func loadEkhoesConfig() error {
 		return err
 	}
 
-	if err := yaml.Unmarshal(data, &conf); err != nil {
+	if err := yaml.Unmarshal(data, &Conf); err != nil {
 		return err
 	}
 
