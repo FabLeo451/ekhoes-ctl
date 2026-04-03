@@ -5,13 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	//"time"
-
 	"net/http"
-	//"os"
 
-	//"github.com/jedib0t/go-pretty/v6/table"
-	"ekhoes-ctl/config"
 	"ekhoes-ctl/gptable"
 )
 
@@ -23,7 +18,7 @@ type ProcInfo struct {
 }
 
 func TopCpuProcesses(args []string) error {
-	endpoint := fmt.Sprintf("%s/ctl/top", config.Conf.URL)
+	endpoint := GetCtlEndpoint("top")
 	
 	token, _ := GetToken()
 

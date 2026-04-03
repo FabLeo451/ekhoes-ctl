@@ -115,7 +115,7 @@ func Login(args []string) error {
 	params := url.Values{}
 	params.Set("nosession", "1")
 
-	endpoint := fmt.Sprintf("%s/login?%s", config.Conf.URL, params.Encode())
+	endpoint := fmt.Sprintf("%s%s/login?%s", config.Conf.URL, config.Conf.RootPath, params.Encode())
 
 	req, err := http.NewRequest("POST", endpoint, bytes.NewBuffer(jsonData))
 	if err != nil {

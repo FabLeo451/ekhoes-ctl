@@ -3,15 +3,10 @@ package cmd
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
 	"time"
-
 	"net/http"
-	//"os"
 
-	//"github.com/jedib0t/go-pretty/v6/table"
-	"ekhoes-ctl/config"
 	"ekhoes-ctl/gptable"
 )
 
@@ -24,7 +19,7 @@ type ConnectionItem struct {
 }
 
 func GetWebsocketConnections(args []string) error {
-	endpoint := fmt.Sprintf("%s/ctl/connections", config.Conf.URL)
+	endpoint := GetCtlEndpoint("ws")
 	
 	token, _ := GetToken()
 

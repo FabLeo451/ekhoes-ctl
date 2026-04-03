@@ -4,9 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
-
 	"net/http"
-	"ekhoes-ctl/config"
 )
 
 func KillSession(args []string) error {
@@ -15,7 +13,8 @@ func KillSession(args []string) error {
 		return errors.New("Missing session id")
 	}
 
-	endpoint := fmt.Sprintf("%s/ctl/session/%s", config.Conf.URL, args[1])
+	endpoint := GetCtlEndpoint("session")
+	endpoint = fmt.Sprintf("%s/%s", endpoint, args[1])
 	token, _ := GetToken()
 
 	req, err := http.NewRequest("DELETE", endpoint, nil)

@@ -2,16 +2,12 @@ package cmd
 
 import (
 	"errors"
-	"fmt"
 	"io"
-
 	"net/http"
-	"ekhoes-ctl/config"
 )
 
 func KillAllSessions(args []string) error {
-
-	endpoint := fmt.Sprintf("%s/ctl/sessions", config.Conf.URL)
+	endpoint := GetCtlEndpoint("sessions")
 	token, _ := GetToken()
 
 	req, err := http.NewRequest("DELETE", endpoint, nil)

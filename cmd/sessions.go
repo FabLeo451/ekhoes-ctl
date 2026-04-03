@@ -3,15 +3,10 @@ package cmd
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
 	"time"
-
 	"net/http"
-	//"os"
 
-	//"github.com/jedib0t/go-pretty/v6/table"
-	"ekhoes-ctl/config"
 	"ekhoes-ctl/gptable"
 )
 
@@ -26,7 +21,7 @@ type Item struct {
 }
 
 func GetSessions(args []string) error {
-	endpoint := fmt.Sprintf("%s/ctl/sessions", config.Conf.URL)
+	endpoint := GetCtlEndpoint("sessions")
 	token, _ := GetToken()
 
 	req, err := http.NewRequest("GET", endpoint, nil)

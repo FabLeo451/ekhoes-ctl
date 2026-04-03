@@ -10,6 +10,7 @@ import (
 
 type Config struct {
 	URL string `yaml:"url"`
+	RootPath string `yaml:"rootPath"`
 }
 
 var Conf Config
@@ -55,7 +56,8 @@ func CreateEkhoesConfig() error {
 	}
 
 	cfg := Config{
-		URL: "https://websocket.ekhoes.com",
+		URL: "https://api.ekhoes.com",
+		RootPath: "/admin",
 	}
 
 	data, err := yaml.Marshal(&cfg)
