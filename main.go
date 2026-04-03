@@ -131,7 +131,7 @@ func main() {
     })
 
     rootCmd.AddCommand(&cobra.Command{
-        Use:   "connections",
+        Use:   "ws",
         Short: "Retrieve websocket connections",
         RunE: func(cmd *cobra.Command, args []string) error {
             return appcmd.GetWebsocketConnections(append([]string{"connections"}, args...))
