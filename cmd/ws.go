@@ -11,11 +11,10 @@ import (
 )
 
 type ConnectionItem struct {
-	SessionId 	 string    `json:"sessionId"`
+	ConnectionId string    `json:"connectionId"`
 	Email     	 string    `json:"email"`
 	Created   	 time.Time `json:"created"`
-	LastActivity     string    `json:"lastActivity"`
-	LastActivityTime time.Time `json:"lastActivityTime"`
+	SessionId 	 string    `json:"sessionId"`
 }
 
 func GetWebsocketConnections(args []string) error {
@@ -64,11 +63,10 @@ func GetWebsocketConnections(args []string) error {
 	
 	gptable.Init();
 	gptable.SetHeader(
-		"Session Id",
+		"Connection Id",
 		"User",
 		"Created",
-		"Last activity",
-		"Last activity time",
+		"Session Id",
 	)
 
 	for _, item := range items {
@@ -76,17 +74,12 @@ func GetWebsocketConnections(args []string) error {
 		tUTC := item.Created.UTC()
 		tLocal := tUTC.In(time.Local)
 		created := tLocal.Format("2006-01-02 15:04:05")
-
-		tUTC = item.LastActivityTime.UTC()
-		tLocal = tUTC.In(time.Local)
-		lastActivityTime := tLocal.Format("2006-01-02 15:04:05")		
 		
 		gptable.AppendRow(
-			item.SessionId,
+			item.ConnectionId,
 			item.Email,
 			created,
-			item.LastActivity,
-			lastActivityTime,
+			item.SessionId,
 		)
 	}
 
