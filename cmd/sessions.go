@@ -6,6 +6,7 @@ import (
 	"io"
 	"time"
 	"net/http"
+	"fmt"
 
 	"ekhoes-ctl/gptable"
 )
@@ -18,6 +19,25 @@ type Item struct {
 	Platform   string `json:"platform"`
 	DeviceType string `json:"deviceType"`
 	Updated    string `json:"updated"`
+	TTL        time.Duration `json:"ttl"`
+}
+
+func HumanizeDuration(d time.Duration) string {
+	days := int(d.Hours()) / 24
+	h := int(d.Hours()) % 24
+	m := int(d.Minutes()) % 60
+	s := int(d.Seconds()) % 60
+
+	if days > 0 {
+		return fmt.Sprintf("%dd %dh %dm %ds", days, h, m, s)
+	}
+	if h > 0 {
+		return fmt.Sprintf("%dh %dm %ds", h, m, s)
+	}
+	if m > 0 {
+		return fmt.Sprintf("%dm %ds", m, s)
+	}
+	return fmt.Sprintf("%ds", s)
 }
 
 func GetSessions(args []string) error {
@@ -56,7 +76,7 @@ func GetSessions(args []string) error {
 		return errors.New("Unable to read body")
 	}
 
-	//fmt.Println(string(bodyBytes))
+	fmt.Println(string(bodyBytes))
 
 	var items []Item
 	if err := json.Unmarshal(bodyBytes, &items); err != nil {
@@ -73,6 +93,7 @@ func GetSessions(args []string) error {
 		"Platform",
 		"Device Type",
 		"Updated",
+		"TTL",
 	)
 
 	for _, item := range items {
@@ -94,6 +115,7 @@ func GetSessions(args []string) error {
 			item.Platform,
 			item.DeviceType,
 			updatedLocal.Format("2006-01-02 15:04:05"),
+			HumanizeDuration(item.TTL),
 		)
 	}
 
