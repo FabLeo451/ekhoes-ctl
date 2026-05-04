@@ -18,7 +18,7 @@ type Item struct {
 	Agent      string `json:"agent"`
 	Platform   string `json:"platform"`
 	DeviceType string `json:"deviceType"`
-	Updated    string `json:"updated"`
+	Created    string `json:"created"`
 	TTL        time.Duration `json:"ttl"`
 }
 
@@ -92,19 +92,19 @@ func GetSessions(args []string) error {
 		"Agent",
 		"Platform",
 		"Device Type",
-		"Updated",
+		"Created",
 		"TTL",
 	)
 
 	for _, item := range items {
 
 		// parse RFC3339
-		tm, err := time.Parse(time.RFC3339, item.Updated)
+		tm, err := time.Parse(time.RFC3339, item.Created)
 		if err != nil {
 			panic(err)
 		}
 
-		updatedLocal := tm.In(time.Local)
+		createdLocal := tm.In(time.Local)
 
 		gptable.AppendRow(
 			item.Id,
@@ -114,7 +114,7 @@ func GetSessions(args []string) error {
 			item.Agent,
 			item.Platform,
 			item.DeviceType,
-			updatedLocal.Format("2006-01-02 15:04:05"),
+			createdLocal.Format("2006-01-02 15:04:05"),
 			HumanizeDuration(item.TTL),
 		)
 	}
