@@ -23,7 +23,7 @@ func KillSession(args []string) error {
 	}
 
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", token)
+	req.Header.Set("Authorization", "Bearer "+token)
 
 	// Create client and call
 	client := &http.Client{}
